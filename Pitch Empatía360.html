@@ -1,0 +1,785 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pitch Empatía360</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{
+  /* Concepto: escenario azul marino (la caja del kit). Los tres colores de las herramientas
+     (turquesa = CEO/lentes, amarillo = CTO/audífonos, magenta = CMO/guantes) organizan roles,
+     tiempos y secciones. Un solo look oscuro por decisión de diseño. */
+  --bg:#0a1730; --bg-2:#0f2146; --panel:#132850; --line:#2b4577; --ink:#eef3ff; --muted:#a8b7d9;
+  --turq:#1fc7c0; --yel:#f7c72c; --mag:#e6338a; --mag-t:#ff7ab8; --sky:#7f98e0; --dark:#06122a;
+  --f-display:'Bricolage Grotesque','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,sans-serif;
+  --f-mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html{box-sizing:border-box;height:100%;background:var(--bg)}
+*,*::before,*::after{box-sizing:inherit}
+body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.5 var(--f-body);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--yel);outline-offset:3px;border-radius:6px}
+
+.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* ---------- cabecera ---------- */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;font:700 1.15rem/1 var(--f-display);letter-spacing:-.01em}
+.logo{width:34px;height:15px}
+.who{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted);min-width:0}
+.who b{color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+.tools{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{background:transparent;border:1px solid var(--line);border-radius:999px;padding:.45em .95em;font-size:.88rem;line-height:1.2;transition:background .2s,border-color .2s}
+.btn:hover{background:var(--panel);border-color:var(--sky)}
+.btn[aria-pressed="true"]{background:var(--panel);border-color:var(--turq)}
+.timer{display:inline-flex;align-items:center;gap:9px;font-family:var(--f-mono);font-weight:500;font-size:1rem;min-width:7.2em;justify-content:center}
+.tdot{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.timer.on .tdot{background:var(--turq);animation:pulse 1.2s ease-in-out infinite}
+.timer.over{border-color:var(--mag-t);color:var(--mag-t)}
+@keyframes pulse{50%{opacity:.25}}
+
+.role{display:inline-block;font:500 .72rem/1 var(--f-mono);letter-spacing:.09em;padding:.4em .65em;border-radius:999px;color:var(--dark);background:var(--c,var(--turq))}
+.r-ceo{--c:var(--turq)} .r-cto{--c:var(--yel)} .r-cmo{--c:var(--mag-t)}
+
+/* ---------- escenario ---------- */
+.stage{position:relative;min-height:0;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+  opacity:0;visibility:hidden;transform:translateX(28px);
+  transition:opacity .45s ease,transform .45s ease,visibility 0s linear .45s}
+.slide.prev{transform:translateX(-28px)}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.wrap{width:100%;max-width:1160px;margin:auto;padding-block:18px}
+
+.rv{animation:none}
+.active .rv{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*90ms + 120ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+.eyebrow{margin:0 0 14px;font:500 .8rem/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.02em}
+h1{font-weight:800;font-size:clamp(2.4rem,6.2vw,5.1rem);line-height:.98;letter-spacing:-.03em}
+h1 .h1b{display:block;color:var(--turq);margin-top:.12em}
+h2{font-weight:800;font-size:clamp(1.8rem,4.2vw,3.3rem);line-height:1.04}
+h3{font-weight:700;font-size:1.35rem;line-height:1.15}
+p{margin:0}
+.lead{font-size:clamp(1.05rem,1.8vw,1.3rem);color:var(--muted);max-width:60ch}
+.foot{margin-top:22px;font-size:.88rem;color:var(--muted);max-width:70ch}
+
+/* ---------- 1. portada ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(24px,5vw,64px);align-items:center}
+.hook{margin-top:26px;font:500 clamp(1.1rem,2vw,1.5rem)/1.35 var(--f-body);max-width:34ch}
+.team{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:12px 22px}
+.team li{display:flex;align-items:center;gap:9px;min-width:0}
+.team span:last-child{overflow-wrap:anywhere}
+.hero-art svg,.kit-art svg{width:100%;height:auto;display:block;max-width:100%}
+.float{animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+
+/* ---------- 2. problema ---------- */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,40px);margin-top:36px}
+.stat{min-width:0}
+.dots{display:flex;gap:6px;margin-bottom:14px}
+.dots i{flex:1;max-width:22px;aspect-ratio:1;border-radius:50%;border:2px solid var(--line)}
+.dots i.on{background:var(--c);border-color:var(--c)}
+.active .dots i{animation:pop .5s cubic-bezier(.2,.9,.3,1.4) both;animation-delay:calc(var(--k)*70ms + 500ms)}
+@keyframes pop{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+.big{font:800 clamp(3rem,7vw,5.2rem)/1 var(--f-display);letter-spacing:-.04em;color:var(--c)}
+.big small{font-size:.38em;font-weight:600;letter-spacing:0;color:var(--muted);margin-left:.2em}
+.stat p{margin-top:10px;font-size:1.08rem;max-width:26ch}
+
+/* ---------- 3. solución ---------- */
+.split{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,5vw,60px);align-items:center}
+.tools-list{display:grid;gap:18px;margin-top:26px}
+.tool{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;align-items:start}
+.sw{width:44px;height:44px;border-radius:50%;border:7px solid var(--c);background:transparent}
+.tool.fill .sw{background:var(--c)}
+.tool p{color:var(--muted);margin-top:3px}
+.tool h3 span{color:var(--c)}
+
+/* ---------- 4. cómo funciona ---------- */
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,2.4vw,28px);min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 20px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:.5em 1em;font-size:.95rem;line-height:1.2;transition:all .2s}
+.chip:hover{border-color:var(--sky)}
+.chip[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:var(--dark);font-weight:600}
+.sim-text{font:500 clamp(1.2rem,2.3vw,1.7rem)/1.45 var(--f-body);min-height:6.2em;transition:filter .5s,opacity .5s}
+.sim-lentes{filter:blur(2.6px);opacity:.82}
+.sim-guantes{letter-spacing:.05em}
+.tr{display:inline-block;animation:tremble .38s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes tremble{0%,100%{transform:none}25%{transform:translate(1.5px,-2.5px) rotate(-4deg)}50%{transform:translate(-2px,1px) rotate(3deg)}75%{transform:translate(1.5px,2px) rotate(-2deg)}}
+.gap-w{color:var(--muted);opacity:.65;letter-spacing:-.06em}
+.sim-cap{margin-top:12px;font:500 .86rem/1.4 var(--f-mono);color:var(--turq);min-height:2.8em}
+.sim-note{margin-top:8px;font-size:.8rem;color:var(--muted)}
+.span-bar{display:flex;gap:4px;margin:18px 0 6px}
+.span-bar div{height:16px;border-radius:8px;background:var(--c);transform-origin:left}
+.active .span-bar div{animation:grow .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*140ms + 300ms)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+.span-lab{display:flex;gap:4px;font:500 .78rem/1.2 var(--f-mono);color:var(--muted)}
+.span-lab div{min-width:0}
+.phases{display:grid;gap:16px;margin-top:22px}
+.phase{display:grid;grid-template-columns:5.4em minmax(0,1fr);gap:14px;align-items:baseline}
+.phase .mn{font:500 .85rem/1.3 var(--f-mono);color:var(--c)}
+.phase p{color:var(--muted);margin-top:2px}
+
+/* ---------- 5. mercado y modelo ---------- */
+.who-line{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;color:var(--muted)}
+.who-line b{color:var(--ink);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,24px);margin-top:30px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .tag{align-self:flex-start;font:500 .72rem/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;padding:.45em .7em;border-radius:999px;background:var(--c);color:var(--dark)}
+.card .price{font:800 clamp(2.2rem,4.4vw,3.2rem)/1 var(--f-display);letter-spacing:-.03em;margin-top:6px}
+.card .price small{font:500 .9rem/1 var(--f-mono);color:var(--muted);letter-spacing:0;margin-left:.3em}
+.card p{color:var(--muted)}
+.card .for{margin-top:auto;padding-top:10px;font-size:.88rem;color:var(--ink)}
+
+/* ---------- 6. números ---------- */
+.econ{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(24px,5vw,60px);align-items:center;margin-top:28px}
+.bar{display:flex;height:64px;border-radius:14px;overflow:hidden;margin-top:18px}
+.bar div{display:flex;align-items:center;padding-inline:14px;font:600 .95rem/1.1 var(--f-body);white-space:nowrap;overflow:hidden;transform-origin:left}
+.bar .bc{background:var(--sky);color:var(--dark)}
+.bar .bm{background:var(--turq);color:var(--dark)}
+.active .bar div{animation:grow .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:.4s}
+.bar-lab{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font:500 .82rem/1.3 var(--f-mono);color:var(--muted)}
+.price-line{font:800 clamp(2rem,4vw,3rem)/1 var(--f-display);letter-spacing:-.03em}
+.price-line small{font:500 .9rem var(--f-mono);color:var(--muted);letter-spacing:0;margin-left:.4em}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}
+.kpi b{display:block;font:800 clamp(1.9rem,3.6vw,2.8rem)/1 var(--f-display);letter-spacing:-.03em;color:var(--c,var(--ink));font-variant-numeric:tabular-nums}
+.kpi span{display:block;margin-top:6px;color:var(--muted);font-size:.95rem}
+
+/* ---------- 7. petición ---------- */
+.ask{font:800 clamp(2.6rem,7.4vw,6rem)/.95 var(--f-display);letter-spacing:-.035em;margin-top:6px}
+.ask em{font-style:normal;color:var(--turq)}
+.ask-sub{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--muted)}
+.ask-sub b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.funds{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:24px;align-items:center}
+.donut{width:100%;height:auto;display:block}
+.seg{fill:none;stroke-width:16}
+.active .seg{animation:draw 1s cubic-bezier(.3,.7,.2,1) both;animation-delay:calc(var(--k)*160ms + 350ms)}
+@keyframes draw{from{stroke-dasharray:0 300}}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.legend li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:start}
+.legend i{width:14px;height:14px;border-radius:4px;background:var(--c);margin-top:.28em}
+.legend span{min-width:0}
+.legend b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend small{display:block;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------- 8. cierre ---------- */
+.words{display:flex;flex-wrap:wrap;gap:0 .28em;font:800 clamp(2.5rem,8vw,6.4rem)/1 var(--f-display);letter-spacing:-.035em}
+.words span:nth-child(1){color:var(--turq)}
+.words span:nth-child(2){color:var(--yel)}
+.words span:nth-child(3){color:var(--mag-t)}
+.words span:nth-child(4){color:var(--ink)}
+.close-p{margin-top:28px;font:500 clamp(1.1rem,2vw,1.45rem)/1.4 var(--f-body);max-width:44ch}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:30px;padding:.85em 1.4em;border-radius:999px;background:var(--turq);color:var(--dark);font-weight:600;text-decoration:none;transition:transform .2s}
+.cta:hover{transform:translateY(-2px)}
+.thanks{margin-top:18px;font:500 .85rem var(--f-mono);color:var(--muted);letter-spacing:.06em}
+
+/* ---------- navegación inferior ---------- */
+.nav{display:grid;gap:10px;padding-block:10px 12px}
+.tl{position:relative;display:flex;gap:3px;height:22px;align-items:stretch}
+.tl .seg-b{flex:var(--w) 1 0;min-width:0;border-radius:6px;background:var(--c);opacity:.28;display:flex;align-items:center;padding-inline:8px;font:500 .68rem/1 var(--f-mono);color:var(--dark);overflow:hidden;white-space:nowrap;transition:opacity .3s}
+.tl .seg-b.cur{opacity:1}
+.tl .ph{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ink);border-radius:2px;left:0;transition:left .25s linear;pointer-events:none}
+.navrow{display:flex;align-items:center;gap:12px}
+.dotsnav{display:flex;flex:1;justify-content:center;flex-wrap:wrap;gap:4px}
+.dn{width:30px;height:30px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;padding:0}
+.dn::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--c);opacity:.4;transition:all .25s}
+.dn[aria-current="true"]::before{opacity:1;transform:scale(1.5)}
+.count{font:500 .85rem var(--f-mono);color:var(--muted);min-width:3.4em;text-align:center}
+.arrow{width:44px;height:44px;padding:0;display:grid;place-items:center;font-size:1.2rem}
+.arrow:disabled{opacity:.3;cursor:default}
+
+/* ---------- guion y ajustes ---------- */
+.panel{position:fixed;top:0;right:0;bottom:0;z-index:20;width:min(420px,100%);background:var(--bg-2);border-left:1px solid var(--line);
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) 18px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:-18px 0 40px rgba(2,8,24,.45)}
+.panel h3{font-size:1.2rem}
+.ph-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dwho{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dwin{font:500 .85rem var(--f-mono);color:var(--muted)}
+.dscript{font-size:1.25rem;line-height:1.55;color:var(--ink)}
+.dcount{font:500 .85rem var(--f-mono);color:var(--turq)}
+.dcount.warn{color:var(--yel)}
+.dtotal{font-size:.88rem;color:var(--muted)}
+.row{display:flex;align-items:center;gap:10px}
+.row input[type=checkbox]{width:20px;height:20px;accent-color:var(--turq)}
+.field{display:grid;gap:5px}
+.field label{font:500 .78rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field input{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.6em .75em;font:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:.85rem;color:var(--muted)}
+
+/* ---------- adaptación ---------- */
+@media (max-width:860px){
+  .hero,.split,.econ{grid-template-columns:minmax(0,1fr)}
+  .hero-art{max-width:380px}
+  .stats,.cards{grid-template-columns:minmax(0,1fr)}
+  .stat p{max-width:none}
+  .funds{grid-template-columns:minmax(0,170px) minmax(0,1fr)}
+  .wrap{padding-block:8px}
+}
+@media (max-width:560px){
+  .btn.lbl-hide{display:none}
+  .funds{grid-template-columns:minmax(0,1fr)}
+  .donut{max-width:200px}
+  .dn{width:24px}
+  .kpis{gap:18px 14px}
+  .tools{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="kit" viewBox="0 0 360 260">
+      <rect x="14" y="30" width="332" height="212" rx="20" fill="#12254a" stroke="#2f4f8c" stroke-width="2"/>
+      <rect x="32" y="48" width="296" height="176" rx="12" fill="#0b1b3c"/>
+      <!-- lentes -->
+      <g fill="rgba(31,199,192,.32)" stroke="#1fc7c0" stroke-width="6">
+        <circle cx="92" cy="104" r="26"/><circle cx="154" cy="104" r="26"/>
+      </g>
+      <path d="M118 102h10M66 98l-12-8M180 98l12-8" stroke="#1fc7c0" stroke-width="6" stroke-linecap="round" fill="none"/>
+      <!-- audífonos -->
+      <path d="M214 132a38 38 0 0 1 76 0" fill="none" stroke="#f7c72c" stroke-width="9" stroke-linecap="round"/>
+      <rect x="203" y="124" width="22" height="44" rx="9" fill="#f7c72c"/>
+      <rect x="279" y="124" width="22" height="44" rx="9" fill="#f7c72c"/>
+      <!-- guante -->
+      <g fill="#e6338a">
+        <rect x="64" y="150" width="14" height="34" rx="7"/>
+        <rect x="81" y="142" width="14" height="42" rx="7"/>
+        <rect x="98" y="140" width="14" height="44" rx="7"/>
+        <rect x="115" y="146" width="14" height="38" rx="7"/>
+        <rect x="64" y="172" width="70" height="44" rx="16"/>
+        <rect x="124" y="170" width="38" height="14" rx="7" transform="rotate(24 124 177)"/>
+      </g>
+      <!-- tarjetas -->
+      <g fill="#eef3ff">
+        <rect x="204" y="178" width="38" height="28" rx="5" transform="rotate(-14 223 192)" opacity=".7"/>
+        <rect x="224" y="176" width="38" height="28" rx="5" opacity=".85"/>
+        <rect x="244" y="178" width="38" height="28" rx="5" transform="rotate(14 263 192)"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 34 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="6.5" fill="#1fc7c0"/><circle cx="17" cy="7.5" r="6.5" fill="#f7c72c"/><circle cx="26.5" cy="7.5" r="6.5" fill="#e6338a"/></svg>
+      <span>Empatía360</span>
+    </div>
+    <div class="who" id="who" aria-live="polite"></div>
+    <div class="tools">
+      <button class="btn timer" id="btnTimer" type="button" aria-label="Iniciar o pausar el cronómetro de 3 minutos"><span class="tdot"></span><span id="clock">3:00</span></button>
+      <button class="btn" id="btnScript" type="button" aria-pressed="false" aria-controls="drawer">Guion</button>
+      <button class="btn" id="btnSet" type="button" aria-pressed="false" aria-controls="settings">Ajustes</button>
+      <button class="btn lbl-hide" id="btnFs" type="button">Pantalla completa</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+
+    <!-- 1. Gancho -->
+    <section class="slide" aria-label="Portada">
+      <div class="wrap hero">
+        <div>
+          <p class="eyebrow rv" style="--i:0">Pitch de inversión · Proyecto de emprendimiento</p>
+          <h1 class="rv" style="--i:1">Siente lo que siente tu compañero.<span class="h1b">En 15 minutos.</span></h1>
+          <p class="hook rv" style="--i:3">¿Cuántos compañeros se quedaron fuera de un grupo esta semana en tu salón?</p>
+          <ul class="team rv" style="--i:4">
+            <li><span class="role r-ceo">CEO</span><span data-b="n1"></span></li>
+            <li><span class="role r-cto">CTO</span><span data-b="n2"></span></li>
+            <li><span class="role r-cmo">CMO</span><span data-b="n3"></span></li>
+          </ul>
+        </div>
+        <div class="hero-art rv" style="--i:2"><div class="float"><svg viewBox="0 0 360 260" role="img" aria-label="Caja azul marino del kit con lentes turquesa, audífonos amarillos, un guante magenta y tarjetas de actividades"><use href="#kit"/></svg></div></div>
+      </div>
+    </section>
+
+    <!-- 2. Problema -->
+    <section class="slide" aria-label="El problema">
+      <div class="wrap">
+        <p class="eyebrow rv" style="--i:0">El problema · Encuesta a estudiantes</p>
+        <h2 class="rv" style="--i:1">Todos lo ven. La mayoría no sabe cómo ayudar.</h2>
+        <div class="stats">
+          <div class="stat rv" style="--i:2;--c:var(--turq)">
+            <div class="dots" data-n="10"></div>
+            <div class="big"><span class="cnt" data-to="10">10</span><small>de 10</small></div>
+            <p>ha visto a un compañero quedarse fuera de los grupos.</p>
+          </div>
+          <div class="stat rv" style="--i:3;--c:var(--yel)">
+            <div class="dots" data-n="6"></div>
+            <div class="big"><span class="cnt" data-to="6">6</span><small>de 10</small></div>
+            <p>cree que es difícil entender a un compañero porque no sabe qué siente.</p>
+          </div>
+          <div class="stat rv" style="--i:4;--c:var(--mag-t)">
+            <div class="dots" data-n="4"></div>
+            <div class="big"><span class="cnt" data-to="4">4</span><small>de 10</small></div>
+            <p>dice que la mayoría no ayuda porque no sabe cómo.</p>
+          </div>
+        </div>
+        <p class="foot rv" style="--i:5">Encuesta propia con 10 respuestas. Es una muestra pequeña: sirve como señal inicial, no como dato representativo.</p>
+      </div>
+    </section>
+
+    <!-- 3. Solución -->
+    <section class="slide" aria-label="La solución">
+      <div class="wrap split">
+        <div class="kit-art rv" style="--i:1"><svg viewBox="0 0 360 260" role="img" aria-label="Kit Empatía360 abierto"><use href="#kit"/></svg></div>
+        <div>
+          <p class="eyebrow rv" style="--i:0">La solución</p>
+          <h2 class="rv" style="--i:1">Un kit que se prueba con el cuerpo.</h2>
+          <p class="lead rv" style="--i:2;margin-top:14px">Un juego sensorial de 15 minutos, sin tecnología costosa.</p>
+          <div class="tools-list">
+            <div class="tool rv" style="--i:3;--c:var(--turq)"><span class="sw"></span><div><h3>Lentes <span>turquesa</span></h3><p>Cambian cómo se ve el salón y la pizarra.</p></div></div>
+            <div class="tool rv" style="--i:4;--c:var(--yel)"><span class="sw"></span><div><h3>Audífonos <span>amarillos</span></h3><p>Alteran lo que se escucha. Una consigna simple se vuelve un reto.</p></div></div>
+            <div class="tool rv" style="--i:5;--c:var(--mag-t)"><span class="sw"></span><div><h3>Guantes <span>magenta</span></h3><p>Cambian el tacto y la precisión de las manos.</p></div></div>
+            <div class="tool fill rv" style="--i:6;--c:var(--sky)"><span class="sw"></span><div><h3>Tarjetas y guía</h3><p>Actividades para explorar, reflexionar y actuar.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Cómo funciona -->
+    <section class="slide" aria-label="Cómo funciona">
+      <div class="wrap split" style="grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)">
+        <div class="sim rv" style="--i:1">
+          <p class="eyebrow" style="margin:0">Pruébalo aquí</p>
+          <div class="chips" role="group" aria-label="Elige una herramienta">
+            <button class="chip" type="button" data-mode="none" aria-pressed="true">Sin kit</button>
+            <button class="chip" type="button" data-mode="lentes" aria-pressed="false" style="--c:var(--turq)">Lentes</button>
+            <button class="chip" type="button" data-mode="audifonos" aria-pressed="false" style="--c:var(--yel)">Audífonos</button>
+            <button class="chip" type="button" data-mode="guantes" aria-pressed="false" style="--c:var(--mag-t)">Guantes</button>
+          </div>
+          <div class="sim-text" id="simText" role="img" aria-label="Hoy en tutoría trabajamos en parejas. Lee la consigna, escribe tu respuesta y entrégala en diez minutos."></div>
+          <p class="sim-cap" id="simCap" aria-live="polite"></p>
+          <p class="sim-note">Ejemplo ilustrativo en pantalla. En el aula se vive con objetos reales.</p>
+        </div>
+        <div>
+          <p class="eyebrow rv" style="--i:0">Cómo funciona · Sesión tipo</p>
+          <h2 class="rv" style="--i:1">Quince minutos, tres momentos.</h2>
+          <div class="rv" style="--i:2">
+            <div class="span-bar" aria-hidden="true">
+              <div style="flex:3;--c:var(--turq);--i:0"></div>
+              <div style="flex:7;--c:var(--yel);--i:1"></div>
+              <div style="flex:5;--c:var(--mag-t);--i:2"></div>
+            </div>
+            <div class="span-lab" aria-hidden="true"><div style="flex:3">0–3</div><div style="flex:7">3–10</div><div style="flex:5">10–15 min</div></div>
+          </div>
+          <div class="phases">
+            <div class="phase rv" style="--i:3;--c:var(--turq)"><span class="mn">MIN 0–3</span><div><h3>Ponte el kit</h3><p>Cada alumno elige una herramienta y se la pone.</p></div></div>
+            <div class="phase rv" style="--i:4;--c:var(--yel)"><span class="mn">MIN 3–10</span><div><h3>Haz una tarea simple</h3><p>Leer una consigna, escribir una frase o armar algo en pareja.</p></div></div>
+            <div class="phase rv" style="--i:5;--c:var(--mag-t)"><span class="mn">MIN 10–15</span><div><h3>Cuéntalo en ronda</h3><p>¿Qué te costó? ¿Qué habrías necesitado de un compañero?</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Mercado y modelo -->
+    <section class="slide" aria-label="Mercado y modelo de negocio">
+      <div class="wrap">
+        <p class="eyebrow rv" style="--i:0">Mercado y modelo de negocio</p>
+        <h2 class="rv" style="--i:1">Se vende a colegios, se usa en tutoría y se lleva a casa.</h2>
+        <p class="who-line rv" style="--i:2"><span>Cliente: <b>colegios</b></span><span>Usuario: <b>alumnos en la hora de tutoría</b></span><span>Extensión: <b>alumno y familia</b></span></p>
+        <div class="cards">
+          <div class="card rv" style="--i:3;--c:var(--turq)">
+            <span class="tag">Venta del kit</span>
+            <div class="price">S/ <span data-b="price"></span><small>por kit</small></div>
+            <p>El colegio compra el kit y lo usa en la hora de tutoría.</p>
+            <span class="for">Cliente: colegios</span>
+          </div>
+          <div class="card rv" style="--i:4;--c:var(--yel)">
+            <span class="tag">Suscripción</span>
+            <div class="price">S/ <span data-b="sub"></span><small>por trimestre</small></div>
+            <p>Además de la compra, el colegio recibe el kit y actividades de forma periódica.</p>
+            <span class="for">Cliente: colegios</span>
+          </div>
+          <div class="card rv" style="--i:5;--c:var(--mag-t)">
+            <span class="tag">Kit para casa</span>
+            <div class="price">S/ <span data-b="home"></span><small>por kit</small></div>
+            <p>El alumno se lleva el kit para seguir la experiencia fuera del salón.</p>
+            <span class="for">Usuario: alumno y familia</span>
+          </div>
+        </div>
+        <p class="foot rv" style="--i:6">Precios propuestos por el equipo, por validar con colegios en la etapa piloto.</p>
+      </div>
+    </section>
+
+    <!-- 6. Números -->
+    <section class="slide" aria-label="Los números">
+      <div class="wrap">
+        <p class="eyebrow rv" style="--i:0">Los números</p>
+        <h2 class="rv" style="--i:1">Cada kit deja <span style="color:var(--turq)">S/ <span data-b="margin"></span></span> de margen.</h2>
+        <div class="econ">
+          <div class="rv" style="--i:2">
+            <div class="price-line">S/ <span data-b="price"></span><small>precio de venta a colegios</small></div>
+            <div class="bar" role="img" aria-label="Del precio de venta, una parte es costo y otra es margen"><div class="bc" id="barC"></div><div class="bm" id="barM"></div></div>
+            <div class="bar-lab"><span>Costo del kit: S/ <span data-b="cost"></span></span><span>Margen: <span data-b="mp"></span>%</span></div>
+          </div>
+          <div class="kpis rv" style="--i:3">
+            <div class="kpi" style="--c:var(--yel)"><b data-b="kits"></b><span>kits en el primer lote</span></div>
+            <div class="kpi" style="--c:var(--mag-t)"><b data-b="col"></b><span>colegios a 10 kits cada uno</span></div>
+            <div class="kpi"><b data-b="ing"></b><span>en ventas del primer lote</span></div>
+            <div class="kpi" style="--c:var(--turq)"><b data-b="mt"></b><span>de margen bruto</span></div>
+          </div>
+        </div>
+        <p class="foot rv" style="--i:4">Costos y metas estimadas por el equipo. El margen es bruto: aún no descuenta ventas, logística ni trámites.</p>
+      </div>
+    </section>
+
+    <!-- 7. Petición -->
+    <section class="slide" aria-label="La petición">
+      <div class="wrap split" style="grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)">
+        <div>
+          <p class="eyebrow rv" style="--i:0">La petición</p>
+          <div class="ask rv" style="--i:1"><span data-b="ask"></span><br>por el <em><span data-b="pct"></span>%</em></div>
+          <p class="ask-sub rv" style="--i:2"><span>Valorización implícita: <b data-b="val"></b></span><span>Meta a 12 meses: <b><span data-b="kits"></span> kits en <span data-b="col"></span> colegios</b></span></p>
+        </div>
+        <div class="rv" style="--i:3">
+          <p class="eyebrow" style="margin-bottom:14px">En qué lo usaremos</p>
+          <div class="funds">
+            <svg class="donut" id="donut" viewBox="0 0 120 120" role="img" aria-label="Reparto del dinero solicitado"></svg>
+            <ul class="legend" id="legend"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Cierre -->
+    <section class="slide" aria-label="Cierre">
+      <div class="wrap">
+        <p class="eyebrow rv" style="--i:0">Cierre</p>
+        <div class="words" aria-label="Mira, escucha, siente, comprende.">
+          <span class="rv" style="--i:1">Mira,</span><span class="rv" style="--i:2">escucha,</span><span class="rv" style="--i:3">siente,</span><span class="rv" style="--i:4">comprende.</span>
+        </div>
+        <p class="close-p rv" style="--i:5">Inviertan donde la inclusión deja de ser teoría y se vuelve un juego. ¿Quién se anima a ser el primero en ponerse los lentes?</p>
+        <a class="cta rv" style="--i:6" href="https://elfabius.github.io/kitempatia360.github.io/" target="_blank" rel="noopener">Ver el kit en la web &rarr;</a>
+        <p class="thanks rv" style="--i:7">GRACIAS · EMPATÍA360</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="nav">
+    <div class="tl" id="tl" aria-hidden="true"></div>
+    <div class="navrow">
+      <button class="btn arrow" id="prev" type="button" aria-label="Diapositiva anterior">&larr;</button>
+      <div class="dotsnav" id="dots"></div>
+      <span class="count" id="count">1 / 8</span>
+      <button class="btn arrow" id="next" type="button" aria-label="Diapositiva siguiente">&rarr;</button>
+    </div>
+  </footer>
+
+  <!-- Guion del presentador -->
+  <aside class="panel" id="drawer" hidden aria-label="Guion del presentador">
+    <div class="ph-head"><h3>Guion</h3><button class="btn" id="dClose" type="button">Cerrar</button></div>
+    <div class="dwho" id="dWho"></div>
+    <p class="dwin" id="dWin"></p>
+    <p class="dscript" id="dScript"></p>
+    <p class="dcount" id="dCount"></p>
+    <label class="row"><input type="checkbox" id="auto"><span>Ensayo automático: avanzar solo según los tiempos</span></label>
+    <div class="row"><button class="btn" id="dToggle" type="button">Iniciar</button><button class="btn" id="dReset" type="button">Reiniciar</button></div>
+    <p class="dtotal" id="dTotal"></p>
+    <p class="hint">Atajos: ← → cambian de diapositiva · T cronómetro · P guion · F pantalla completa.</p>
+  </aside>
+
+  <!-- Ajustes -->
+  <aside class="panel" id="settings" hidden aria-label="Ajustes del pitch">
+    <div class="ph-head"><h3>Ajustes</h3><button class="btn" id="sClose" type="button">Cerrar</button></div>
+    <p class="hint">Cambia los datos y toda la presentación y el guion se actualizan. Se guardan en este navegador.</p>
+    <div class="field"><label for="fN1">CEO (nombre)</label><input id="fN1" type="text" maxlength="40" autocomplete="off"></div>
+    <div class="field"><label for="fN2">CTO (nombre)</label><input id="fN2" type="text" maxlength="40" autocomplete="off"></div>
+    <div class="field"><label for="fN3">CMO (nombre)</label><input id="fN3" type="text" maxlength="40" autocomplete="off"></div>
+    <div class="grid2">
+      <div class="field"><label for="fAsk">Monto que piden (S/)</label><input id="fAsk" type="number" min="1000" step="1000" inputmode="numeric"></div>
+      <div class="field"><label for="fPct">% que ofrecen</label><input id="fPct" type="number" min="1" max="95" step="1" inputmode="numeric"></div>
+      <div class="field"><label for="fPrice">Precio del kit (S/)</label><input id="fPrice" type="number" min="1" step="5" inputmode="numeric"></div>
+      <div class="field"><label for="fCost">Costo del kit (S/)</label><input id="fCost" type="number" min="1" step="5" inputmode="numeric"></div>
+    </div>
+    <div class="row"><button class="btn" id="sReset" type="button">Restablecer valores</button></div>
+    <p class="hint">Las cifras iniciales son una propuesta para ensayar. Reemplázalas por las de tu equipo antes de presentar.</p>
+  </aside>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var KEY='empatia360-pitch-v1';
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- datos ---------- */
+  var DEF={n1:'Integrante 1',n2:'Integrante 2',n3:'Integrante 3',ask:40000,pct:15,price:150,cost:80};
+  var S=Object.assign({},DEF);
+  try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);Object.keys(DEF).forEach(function(k){if(k in o&&typeof o[k]===typeof DEF[k])S[k]=o[k];});}}catch(e){}
+  var SUB=60,HOME=99,PER_SCHOOL=10;
+  var FUNDS=[
+    {k:'Producción del primer lote',p:.5,c:'var(--turq)'},
+    {k:'Piloto y mejora del kit en colegios',p:.2,c:'var(--yel)'},
+    {k:'Ventas y marketing a colegios',p:.2,c:'var(--mag-t)'},
+    {k:'Trámites y logística',p:.1,c:'var(--sky)'}
+  ];
+  var NAMEKEY={ceo:'n1',cto:'n2',cmo:'n3'}, ROLE={ceo:'CEO',cto:'CTO',cmo:'CMO'};
+  var COLOR={ceo:'var(--turq)',cto:'var(--yel)',cmo:'var(--mag-t)'};
+  var SLIDES=[
+    {who:'ceo',t0:0,t1:15,title:'Gancho'},
+    {who:'ceo',t0:15,t1:30,title:'Problema'},
+    {who:'cto',t0:30,t1:55,title:'Solución'},
+    {who:'cto',t0:55,t1:75,title:'Cómo funciona'},
+    {who:'cmo',t0:75,t1:100,title:'Mercado y modelo'},
+    {who:'cmo',t0:100,t1:120,title:'Los números'},
+    {who:'ceo',t0:120,t1:160,title:'La petición'},
+    {who:'ceo',t0:160,t1:180,title:'Cierre'}
+  ];
+  var TOTAL=180;
+  var nf=new Intl.NumberFormat('es-PE',{maximumFractionDigits:0});
+  function num(n){return nf.format(Math.round(n));}
+  function money(n){return 'S/ '+num(n);}
+  function D(){
+    var ask=Math.max(1000,+S.ask||0), pct=Math.min(95,Math.max(1,+S.pct||1));
+    var price=Math.max(1,+S.price||1), cost=Math.max(1,+S.cost||1), margin=price-cost;
+    var kits=Math.max(1,Math.round(ask*FUNDS[0].p/cost));
+    return {ask:ask,pct:pct,price:price,cost:cost,margin:margin,kits:kits,
+      col:Math.max(1,Math.round(kits/PER_SCHOOL)),val:ask/(pct/100),
+      ing:kits*price,mt:kits*margin,mp:Math.round(margin/price*100)};
+  }
+  var SCRIPT=[
+    function(d){return 'Buenas tardes, Sharks. Somos Empatía360. Pregunta rápida: ¿cuántos compañeros quedaron fuera de un grupo esta semana en su salón? Soy '+S.n1+', CEO; con '+S.n2+', CTO, y '+S.n3+', CMO.';},
+    function(d){return 'Preguntamos a 10 estudiantes. Los 10 vieron a un compañero quedarse fuera. Seis dicen que es difícil entenderlo porque no saben qué siente. Cuatro dicen que la mayoría no ayuda porque no sabe cómo.';},
+    function(d){return 'Nuestra solución: un kit de inclusión para el aula. Lentes que cambian cómo se ve el salón, audífonos que alteran lo que se escucha y guantes que cambian el tacto. Cada alumno vive en carne propia lo que otro siente. Sin tecnología costosa: objetos físicos, tarjetas de actividades y una guía.';},
+    function(d){return 'Dura quince minutos y cabe en la hora de tutoría: tres para ponerse el kit, siete para hacer una tarea simple y cinco para contar en ronda qué costó. Prueben aquí: con lentes, la misma consigna ya cuesta leerla.';},
+    function(d){return 'Vendemos a colegios; el usuario es el alumno en tutoría. Tres ingresos: venta directa del kit a '+money(d.price)+'; suscripción trimestral para renovar actividades, '+money(SUB)+'; y kit para casa a '+money(HOME)+', para que la familia continúe la experiencia.';},
+    function(d){return 'Cada kit cuesta '+money(d.cost)+' y se vende a '+money(d.price)+': margen de '+money(d.margin)+', '+d.mp+'%. Con la inversión fabricamos '+num(d.kits)+' kits para unos '+num(d.col)+' colegios: '+money(d.ing)+' en ventas y '+money(d.mt)+' de margen bruto.';},
+    function(d){return 'Hoy les pedimos '+money(d.ask)+' por el '+d.pct+'% de Empatía360. La mitad fabrica el primer lote; el 20% prueba y mejora el kit en colegios piloto; otro 20% va a ventas y marketing; y el 10%, a trámites y logística. Su dinero nos lleva del prototipo a '+num(d.col)+' colegios reales en doce meses.';},
+    function(d){return 'Mira, escucha, siente, comprende. Inviertan donde la inclusión deja de ser teoría y se vuelve un juego. ¿Quién se anima a ser el primero en ponerse los lentes? Gracias.';}
+  ];
+
+  /* ---------- utilidades ---------- */
+  function $(id){return document.getElementById(id);}
+  function fmt(s){s=Math.max(0,s);return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+  function words(t){return t.trim().split(/\s+/).length;}
+  var slides=Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var cur=0;
+
+  /* ---------- pintar datos ---------- */
+  function render(){
+    var d=D();
+    var B={n1:S.n1||DEF.n1,n2:S.n2||DEF.n2,n3:S.n3||DEF.n3,ask:money(d.ask),pct:String(d.pct),val:money(d.val),
+      price:num(d.price),cost:num(d.cost),margin:num(d.margin),mp:String(d.mp),kits:num(d.kits),col:num(d.col),
+      ing:money(d.ing),mt:money(d.mt),sub:num(SUB),home:num(HOME)};
+    document.querySelectorAll('[data-b]').forEach(function(el){var k=el.getAttribute('data-b');if(k in B)el.textContent=B[k];});
+    var wc=Math.min(100,Math.max(0,d.cost/d.price*100));
+    $('barC').style.width=wc+'%';$('barM').style.width=(100-wc)+'%';
+    $('barC').textContent=wc>22?'Costo':'';$('barM').textContent=(100-wc)>22?'Margen':'';
+    buildDonut(d);
+    buildWho();
+    drawer();
+  }
+  function buildDonut(d){
+    var C=2*Math.PI*46,acc=0,svg=$('donut'),html='<g transform="rotate(-90 60 60)">';
+    FUNDS.forEach(function(f,i){
+      var len=Math.max(0,f.p*C-2.5);
+      html+='<circle class="seg" style="--k:'+i+';stroke:'+f.c+'" cx="60" cy="60" r="46" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-acc).toFixed(2)+'"/>';
+      acc+=f.p*C;
+    });
+    svg.innerHTML=html+'</g><text x="60" y="58" text-anchor="middle" fill="var(--ink)" font-family="var(--f-display)" font-weight="800" font-size="15">'+num(d.ask/1000)+' mil</text><text x="60" y="73" text-anchor="middle" fill="var(--muted)" font-family="var(--f-mono)" font-size="7">SOLES</text>';
+    $('legend').innerHTML=FUNDS.map(function(f){
+      return '<li style="--c:'+f.c+'"><i></i><span>'+f.k+'</span><b>'+money(d.ask*f.p)+'<small>'+Math.round(f.p*100)+'%</small></b></li>';
+    }).join('');
+  }
+  function buildWho(){
+    var s=SLIDES[cur];
+    $('who').innerHTML='<span class="role r-'+s.who+'">'+ROLE[s.who]+'</span><b>'+esc(S[NAMEKEY[s.who]]||DEF[NAMEKEY[s.who]])+'</b><span>· '+s.title+'</span>';
+  }
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  /* puntos de la encuesta */
+  document.querySelectorAll('.dots').forEach(function(el){
+    var n=+el.getAttribute('data-n'),h='';
+    for(var i=0;i<10;i++)h+='<i class="'+(i<n?'on':'')+'" style="--k:'+i+'"></i>';
+    el.innerHTML=h;el.setAttribute('role','img');el.setAttribute('aria-label',n+' de 10');
+  });
+
+  /* ---------- línea de tiempo y puntos ---------- */
+  var segs=[];
+  SLIDES.forEach(function(s,i){var l=segs[segs.length-1];if(l&&l.who===s.who)l.t1=s.t1;else segs.push({who:s.who,t0:s.t0,t1:s.t1});});
+  $('tl').innerHTML=segs.map(function(g){return '<div class="seg-b" data-who="'+g.who+'" style="--w:'+(g.t1-g.t0)+';--c:'+COLOR[g.who]+'">'+ROLE[g.who]+' · '+fmt(g.t0)+'</div>';}).join('')+'<div class="ph" id="ph"></div>';
+  $('dots').innerHTML=SLIDES.map(function(s,i){return '<button class="dn" type="button" data-i="'+i+'" style="--c:'+COLOR[s.who]+'" aria-label="Ir a '+(i+1)+': '+s.title+'"></button>';}).join('');
+  $('dots').addEventListener('click',function(e){var b=e.target.closest('.dn');if(b)go(+b.getAttribute('data-i'));});
+
+  /* ---------- navegación ---------- */
+  var simTimeout=null,simTouched=false;
+  function go(n){
+    n=Math.max(0,Math.min(SLIDES.length-1,n));
+    var changed=n!==cur;
+    cur=n;
+    slides.forEach(function(s,i){
+      s.classList.toggle('active',i===n);
+      s.classList.toggle('prev',i<n);
+      s.inert=(i!==n);
+      s.setAttribute('aria-hidden',i!==n?'true':'false');
+      if(i===n)s.scrollTop=0;
+    });
+    document.querySelectorAll('.dn').forEach(function(b,i){if(i===n)b.setAttribute('aria-current','true');else b.removeAttribute('aria-current');});
+    $('count').textContent=(n+1)+' / '+SLIDES.length;
+    $('prev').disabled=n===0;$('next').disabled=n===SLIDES.length-1;
+    buildWho();drawer();markSeg();
+    clearTimeout(simTimeout);
+    if(n===1)countUp();
+    if(n===3&&!simTouched&&!reduce){simTimeout=setTimeout(function(){if(!simTouched&&cur===3)setSim('lentes');},1800);}
+  }
+  function markSeg(){
+    var s=SLIDES[cur];
+    document.querySelectorAll('.seg-b').forEach(function(node,i){
+      node.classList.toggle('cur',segs[i].t0<=s.t0&&segs[i].t1>=s.t1);
+    });
+  }
+  $('prev').addEventListener('click',function(){go(cur-1);});
+  $('next').addEventListener('click',function(){go(cur+1);});
+
+  var tx=0,ty=0;
+  $('stage').addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  $('stage').addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>60&&Math.abs(dy)<50)go(cur+(dx<0?1:-1));
+  },{passive:true});
+
+  /* ---------- contadores ---------- */
+  function countUp(){
+    if(reduce)return;
+    document.querySelectorAll('.cnt').forEach(function(el){
+      var to=+el.getAttribute('data-to'),t0=null;
+      el.textContent='0';
+      function step(ts){
+        if(t0===null)t0=ts;
+        var p=Math.min(1,(ts-t0-400)/800);
+        if(p<0){requestAnimationFrame(step);return;}
+        el.textContent=String(Math.round(to*(1-Math.pow(1-p,3))));
+        if(p<1)requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ---------- simulador ---------- */
+  var BASE='Hoy en tutoría trabajamos en parejas. Lee la consigna, escribe tu respuesta y entrégala en diez minutos.';
+  var CAP={
+    none:'Así lo lee la mayoría. Activa una herramienta para ver cómo cambia la misma consigna.',
+    lentes:'Con los lentes, el texto y la pizarra se ven borrosos. Leer la consigna ya es un reto.',
+    audifonos:'Con los audífonos faltan palabras. Hay que pedir que la consigna se repita.',
+    guantes:'Con los guantes, escribir y armar con precisión cuesta mucho más.'
+  };
+  function setSim(mode){
+    var el=$('simText'),h;
+    if(mode==='audifonos'){
+      h=BASE.split(' ').map(function(w,i){return i%3===2?'<span class="gap-w">'+new Array(Math.max(3,w.replace(/[.,]/g,'').length)+1).join('▒')+'</span>':w;}).join(' ');
+    }else if(mode==='guantes'){
+      h=Array.from(BASE).map(function(ch,i){return ch===' '?' ':'<span class="tr" style="--d:'+(((i*37)%100)/250).toFixed(2)+'s">'+ch+'</span>';}).join('');
+    }else h=esc(BASE);
+    el.innerHTML=h;
+    el.className='sim-text'+(mode==='none'?'':' sim-'+mode);
+    $('simCap').textContent=CAP[mode];
+    document.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed',String(c.getAttribute('data-mode')===mode));});
+  }
+  document.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){simTouched=true;setSim(c.getAttribute('data-mode'));});});
+  setSim('none');
+
+  /* ---------- guion ---------- */
+  var drawerEl=$('drawer'),setEl=$('settings');
+  function drawer(){
+    var s=SLIDES[cur],d=D(),t=SCRIPT[cur](d),w=words(t),sec=Math.round(w/2.5),budget=s.t1-s.t0;
+    $('dWho').innerHTML='<span class="role r-'+s.who+'">'+ROLE[s.who]+'</span><b>'+esc(S[NAMEKEY[s.who]]||'')+'</b>';
+    $('dWin').textContent=(cur+1)+'. '+s.title+' · '+fmt(s.t0)+' – '+fmt(s.t1)+' ('+budget+' s)';
+    $('dScript').textContent=t;
+    var c=$('dCount');c.textContent=w+' palabras · unos '+sec+' s hablando';c.className='dcount'+(sec>budget?' warn':'');
+    var all=0;SLIDES.forEach(function(x,i){all+=words(SCRIPT[i](d));});
+    $('dTotal').textContent='Guion completo: '+all+' palabras, unos '+Math.round(all/2.5)+' s de los 180 s (a 150 palabras por minuto).';
+  }
+  function toggle(el,btn,open){
+    var show=open===undefined?el.hidden:open;
+    if(show){drawerEl.hidden=true;setEl.hidden=true;$('btnScript').setAttribute('aria-pressed','false');$('btnSet').setAttribute('aria-pressed','false');}
+    el.hidden=!show;btn.setAttribute('aria-pressed',String(show));
+  }
+  $('btnScript').addEventListener('click',function(){toggle(drawerEl,$('btnScript'));});
+  $('dClose').addEventListener('click',function(){toggle(drawerEl,$('btnScript'),false);});
+  $('btnSet').addEventListener('click',function(){toggle(setEl,$('btnSet'));});
+  $('sClose').addEventListener('click',function(){toggle(setEl,$('btnSet'),false);});
+
+  /* ---------- ajustes ---------- */
+  var FIELDS={fN1:'n1',fN2:'n2',fN3:'n3',fAsk:'ask',fPct:'pct',fPrice:'price',fCost:'cost'};
+  function fillFields(){Object.keys(FIELDS).forEach(function(id){$(id).value=S[FIELDS[id]];});}
+  Object.keys(FIELDS).forEach(function(id){
+    $(id).addEventListener('input',function(){
+      var k=FIELDS[id],v=$(id).value;
+      S[k]=typeof DEF[k]==='number'?(parseFloat(v)||0):v;
+      try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+      render();
+    });
+  });
+  $('sReset').addEventListener('click',function(){S=Object.assign({},DEF);try{localStorage.removeItem(KEY);}catch(e){}fillFields();render();});
+
+  /* ---------- cronómetro ---------- */
+  var el=0,running=false,last=0,iv=null;
+  function paintClock(){
+    var rem=TOTAL-el,b=$('btnTimer');
+    $('clock').textContent=rem>=0?fmt(Math.ceil(rem)):'+'+fmt(Math.floor(-rem));
+    b.classList.toggle('over',rem<0);b.classList.toggle('on',running);
+    $('ph').style.left='calc('+(Math.min(el/TOTAL,1)*100)+'% - 1px)';
+    $('dToggle').textContent=running?'Pausar':(el>0?'Continuar':'Iniciar');
+  }
+  function tick(){
+    var now=Date.now();el+=(now-last)/1000;last=now;
+    if($('auto').checked){
+      var t=SLIDES.length-1;
+      for(var i=0;i<SLIDES.length;i++){if(el<SLIDES[i].t1){t=i;break;}}
+      if(t>cur)go(t);
+    }
+    paintClock();
+  }
+  function startStop(){
+    if(running){running=false;clearInterval(iv);}
+    else{
+      running=true;last=Date.now();iv=setInterval(tick,200);
+      if($('auto').checked&&el===0)go(0);
+    }
+    paintClock();
+  }
+  function resetTimer(){running=false;clearInterval(iv);el=0;paintClock();if($('auto').checked)go(0);}
+  $('btnTimer').addEventListener('click',startStop);
+  $('dToggle').addEventListener('click',startStop);
+  $('dReset').addEventListener('click',resetTimer);
+
+  /* ---------- pantalla completa y teclado ---------- */
+  var fsBtn=$('btnFs');
+  if(!document.fullscreenEnabled)fsBtn.hidden=true;
+  function fs(){
+    try{
+      if(document.fullscreenElement){document.exitFullscreen();}
+      else{var p=document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}
+    }catch(e){}
+  }
+  fsBtn.addEventListener('click',fs);
+  document.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    var tag=e.target&&e.target.tagName,typing=tag==='INPUT'||tag==='TEXTAREA';
+    if(e.key==='Escape'){toggle(drawerEl,$('btnScript'),false);return;}
+    if(typing)return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();go(cur+1);}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1);}
+    else if(k===' '&&tag!=='BUTTON'&&tag!=='A'){e.preventDefault();go(cur+1);}
+    else if(k==='Home')go(0);
+    else if(k==='End')go(SLIDES.length-1);
+    else if(k==='p'||k==='P')toggle(drawerEl,$('btnScript'));
+    else if(k==='t'||k==='T')startStop();
+    else if(k==='f'||k==='F')fs();
+  });
+
+  fillFields();render();go(0);paintClock();
+})();
+</script>
+
+</body></html>
